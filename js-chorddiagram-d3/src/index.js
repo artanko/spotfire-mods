@@ -161,45 +161,93 @@ const init = async (mod) => {
             // a document modification was made during a progress indication.
             return;
         }
+ /**
+         * Get the color hierarchy.
+         */
         const colorHierarchy = await dataView.hierarchy("Color");
-        const xHierarchy = await dataView.hierarchy("X");
-        const pointsTable = createTable(createPoint)(allRows, !xHierarchy.isEmpty, !colorHierarchy.isEmpty);
+        const colorLeafNodes = (await colorHierarchy.root()).leaves();
+        const colorDomain = colorHierarchy.isEmpty
+            ? ["All Values"]
+            : colorLeafNodes.map((node) => node.formattedPath());
+         
+
+            
+        const xHierarchy = await dataView.hierarchy("From");
         const xGroup = (await xHierarchy.root()).leaves();
-        const xTable = createTable(createGroup)(xGroup, !xHierarchy.isEmpty, !colorHierarchy.isEmpty);
-        const colorGroup = (await colorHierarchy.root()).leaves();
-        const colorTable = createTable(createGroup)(colorGroup, !xHierarchy.isEmpty, !colorHierarchy.isEmpty);
-
-        const normalize = is(chartType)("percentStacked");
-        const stacked = normalize || is(chartType)("stacked");
-
-        stacked && stack(pointsTable)(xTable)(normalize);
-
-        const xAxisMeta = await mod.visualization.axis("X");
-        const yAxisMeta = await mod.visualization.axis("Y");
-        const colorAxisMeta = await mod.visualization.axis("Color");
-        const xAxisDisplayNames = axisDisplayName(xAxisMeta);
-        const yAxisDisplayNames = axisDisplayName(yAxisMeta);
-        const colorAxisDisplayNames = axisDisplayName(colorAxisMeta);
-
-        const margin = { top: 20, right: 40, bottom: 40, left: 80 };
-        console.log(xGroup);
         
-                /* using D3 ObservableHQ runtime*/
-                const runtime = new Runtime();
-                const main = runtime.module(define, name => {
-                    if (name == 'chart') {
-                        return new Inspector(document.querySelector("#mod-container"));
-                    }
-                    else{
-                        return true;
-                    }
+        const pointsTable = createTable(createPoint)(allRows, !xHierarchy.isEmpty, !colorHierarchy.isEmpty);
 
 
-                  });
-          /*connecting Observable runtime objects to Spotfire objects*/
+        const dataColumns = [
+            "Colors",
+            ...colorDomain.flatMap((color) => [{ label: color, type: "number" }, { role: "style" }])
+        ];
         
-          main.redefine("teams",xGroup );
-          console.log(allRows);
+        //get the colors of the groups
+        let colorgroup = xGroup.map((leaf) => {
+            var color;
+            leaf.rows().forEach((r) => {
+                let colorIndex = !colorHierarchy.isEmpty ? r.categorical("Color").leafIndex : 0;
+                color = r.color().hexCode;
+            });
+            var row = [ color,color];
+            return row;
+        });
+
+        function addColors(xGroups,colorgroup)
+        {return(
+            xGroups.map(function(d,i) {
+              return {
+                key: d.key.toUpperCase(),
+                index: i + 1,
+                colors  : colorgroup[i]
+              };
+            })
+            )
+        }
+
+        var smallteamsdata=addColors(xGroup,colorgroup);
+       
+        var matrixRows = new Array(xGroup.length).fill([0]).flat();
+        var matrixColums = new Array(xGroup.length).fill([0]).flat();
+        //create the matrix -> for each pair of import export
+        let dataRows = matrixRows.map((row) => {
+            return matrixColums.flat();
+        });
+
+       
+        allRows.forEach(row => {
+           
+            var from=row.categorical('From').leafIndex;
+            var to=row.categorical('To').leafIndex;
+            var value = row.continuous('Y').value();
+            console.log(from+' '+to);
+            dataRows[from][to] = value;
+             
+        });
+
+        console.log('matrix');
+        console.log(dataRows); 
+
+        
+        const margin = { top: 70, right: 40, bottom: 70, left: 80 };
+       
+        
+        /* using D3 ObservableHQ runtime*/
+        const runtime = new Runtime();
+        const main = runtime.module(define, name => {
+            if (name == 'chart') {
+                return new Inspector(document.querySelector("#mod-container"));
+            }
+            else{
+                return true;
+            }
+        });
+          
+
+        /*replacing Observable runtime objects to Spotfire objects*/
+          main.redefine("teams",smallteamsdata );
+          main.redefine("M",dataRows );
  
     }
 };

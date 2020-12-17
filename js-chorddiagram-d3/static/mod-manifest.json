@@ -1,0 +1,80 @@
+{
+    "apiVersion": "1.0",
+    "version": "0.0.1",
+    "name": "Chord diagram",
+    "id": "dlv-js-chorddiagram-d3",
+    "icon": "icon.svg",
+    "properties": [
+        {
+            "name": "chartType",
+            "type": "string",
+            "defaultValue": "overlapping"
+        },
+        {
+            "name": "curveType",
+            "type": "string",
+            "defaultValue": "rounded"
+        }
+    ],
+    "dataViewDefinition": {
+        "colorAxis": {
+            "mode": "categorical",
+            "dropTarget": {
+                "icon": "Color",
+                "description": "Color by {0}"
+            }
+        },
+        "axes": [
+            {
+                "name": "To",
+                "mode": "categorical",
+                "placement": "top",
+                "dropTarget": {
+                    "icon": "XAxis3D",
+                    "description": "Use {0} on the mod's X-axis"
+                },
+                "propertyControl": {
+                    "title": "To-axis"
+                },
+                "legendItem": {
+                    "title": "To-axis",
+                    "defaultVisibility": "hidden"
+                }
+            },
+            {
+                "name": "From",
+                "mode": "categorical",
+                "placement": "bottom",
+                "dropTarget": {
+                    "icon": "XAxis3D",
+                    "description": "Use {0} on the mod's X-axis"
+                },
+                "propertyControl": {
+                    "title": "From"
+                },
+                "legendItem": {
+                    "title": "From",
+                    "defaultVisibility": "hidden"
+                }
+            },
+            {
+                "name": "Y",
+                "mode": "continuous",
+                "allowMultipleMeasures": true,
+                "placement": "left",
+                "propertyControl": {
+                    "title": "Y-axis"
+                },
+                "legendItem": {
+                    "title": "Y-axis",
+                    "defaultVisibility": "hidden"
+                }
+            }
+        ]
+    },
+    "files": [
+        "index.html",
+        "main.css",
+        "bundle.js"
+    ]
+}

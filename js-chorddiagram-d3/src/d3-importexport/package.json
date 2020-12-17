@@ -1,0 +1,14 @@
+{
+  "name": "21695d72a4e2906d",
+  "main": "21695d72a4e2906d@682.js",
+  "version": "682.0.0",
+  "homepage": "https://observablehq.com/d/21695d72a4e2906d",
+  "author": {
+    "name": "Andy Oeyen",
+    "url": "https://observablehq.com/@artanko"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4"
+  }
+}
