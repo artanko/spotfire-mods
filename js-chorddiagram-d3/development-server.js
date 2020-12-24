@@ -98,7 +98,7 @@ function cacheRedirect(req, res, next) {
     // Set same security headers in the development server as in the Spotfire runtime.
     res.setHeader(
         "content-security-policy",
-        `sandbox allow-scripts; default-src 'self' https://cdn.jsdelivr.net/npm/ https://unpkg.com/ 'unsafe-eval' 'unsafe-hashes' 'unsafe-inline' blob: data: ${[
+        `sandbox allow-scripts; default-src 'self' 'unsafe-eval' 'unsafe-hashes' 'unsafe-inline' blob: data: ${[
             ...allowedExternalResources.values()
         , ...declaredExternalResourcesInManifest].join(" ")}`
     );
